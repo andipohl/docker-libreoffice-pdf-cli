@@ -1,12 +1,40 @@
-FROM debian:jessie
+FROM debian:bullseye
 
 # Disable prompts on apt-get install
 ENV DEBIAN_FRONTEND noninteractive
 
+# include backport-repo
+RUN apt-get update -qq \
+    && apt-get install -y -q --no-install-recommends software-properties-common \
+    && add-apt-repository 'deb [arch=amd64] https://deb.debian.org/debian bullseye-backports main contrib non-free'
+
 # Install latest stable LibreOffice
 RUN apt-get update -qq \
-    && apt-get install -y -q libreoffice \
-    && apt-get remove -q -y libreoffice-gnome
+    && apt-get install -y -q --no-install-recommends -t bullseye-backports \
+        libreoffice libreoffice-java-common \
+        default-jre \
+        fonts-opensymbol \
+            hyphen-fr \
+            hyphen-de \
+            hyphen-en-us \
+            hyphen-it \
+            hyphen-ru \
+            fonts-dejavu \
+            fonts-dejavu-core \
+            fonts-dejavu-extra \
+            fonts-droid-fallback \
+            fonts-dustin \
+            fonts-f500 \
+            fonts-fanwood \
+            fonts-freefont-ttf \
+            fonts-liberation \
+            fonts-lmodern \
+            fonts-lyx \
+            fonts-sil-gentium \
+            fonts-texgyre \
+            fonts-tlwg-purisa \
+    && apt-get remove -q -y libreoffice-gnome \
+    && apt -y autoremove
 
 # Cleanup after apt-get commands
 RUN apt-get clean \
